@@ -1,5 +1,7 @@
 package com.kh.mvc.controller;
 
+import java.util.List;
+
 import com.kh.mvc.model.service.MemberService;
 import com.kh.mvc.model.vo.Member;
 import com.kh.mvc.view.MemberView;
@@ -30,5 +32,78 @@ public class MemberController {
 			new MemberView().displayFail("회원 추가 실패");
 		}
 	}
-	
+
+	public void selectAll() {
+		// SELECT -> ResultSet -> List<Member>
+		List<Member> list = mService.selectAll();
+		
+		if(list.isEmpty()) {
+			new MemberView().displayNodata("전체 조회 결과가 없습니다..");
+		} else {
+			new MemberView().displayList(list);
+		}
+		
+	}
+
+	public void selectByUserId(String userId) {
+		
+		// 서비스가 반환해주는 결과값?
+		//   List?       int ?       VO(Member)
+		// 결과행 여러개   갯수셀 떄      반환 1개 or 0개
+		Member m = mService.selectByUserId(userId);
+		
+		if(m != null) {
+			new MemberView().displayOne(m);
+		} else {
+			new MemberView().displayNodata("검색한 회원과 일치하는 데이터가 없습니다.");
+		}
+	}
+
+	public void selectByUserName(String keyword) {
+		// 서비스가 반환해주는 결과값
+		// List
+		List<Member> list = mService.selectByUserName(keyword);
+		
+		if(list.isEmpty()) {
+			new MemberView().displayNodata("검색결과가 없습니다..");
+		} else {
+			new MemberView().displayList(list);
+		}
+	}
+
+	public void updateMember(String userId, String newPwd, String newEmail, String newPhone, String newAddress) {
+		// 서비스가 반환해주는 결과값
+		// Member / 포장필요
+		Member m = new Member();
+		m.setMemberId(userId);
+		m.setMemberPwd(newPwd);
+		m.setEmail(newEmail);
+		m.setPhone(newPhone);
+		m.setAddress(newAddress);
+		
+		
+		int result = mService.updateMember(m);
+		
+		if (result > 0) {
+			new MemberView().displaySuccess("정보변경 성공!");
+		} else {
+			new MemberView().displayFail("정보변경 실패");
+		}
+		
+		
+	}
+
+	public void deleteMember(String userId) {
+		// 서비스가 반환해주는 결과값
+		// Member
+		int result = mService.deleteMember(userId);
+
+		if (result > 0) {
+			new MemberView().displaySuccess("성공적으로 삭제했습니다.");
+		} else {
+			new MemberView().displayFail("삭제실패...");
+		}
+
+	}
+
 }
